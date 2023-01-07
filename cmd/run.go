@@ -6,22 +6,25 @@ package cmd
 
 import (
 	"fmt"
-
+	"log"
 	"github.com/spf13/cobra"
+	log "github.com/sirupsen/logrus"
+
 )
 
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Run the stripseven reverse proxy",
+	Long: `Run the stripseven reverse proxy`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("run called")
+   log.SetFormatter(&log.JSONFormatter{})
+    log.WithFields(
+        log.Fields{
+            "foo": "foo",
+            "bar": "bar",
+        },
+    ).Info("Something happened")
 	},
 }
 
@@ -37,4 +40,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// runCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	runCmd.Flags().IntP("port", "p", 8080, "specify local bind port")
 }
