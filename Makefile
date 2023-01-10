@@ -1,5 +1,9 @@
 
+.DEFAULT_GOAL := @goal
 :ONESHELL:
+
+## recipe
+@goal: cleandist dist build check
 
 dist:
 	mkdir $@
@@ -8,10 +12,10 @@ dist:
 
 	# add bats struts
 	# https://bats-core.readthedocs.io/en/stable/tutorial.html#quick-installation
-	mkdir -p $@/test
-	git submodule add -f https://github.com/bats-core/bats-core.git $@/test/bats
-	git submodule add -f https://github.com/bats-core/bats-support.git $@/test/test_helper/bats-support
-	git submodule add -f https://github.com/bats-core/bats-assert.git $@/test/test_helper/bats-assert
+	mkdir -p $@/test/test_helper
+	git clone https://github.com/bats-core/bats-core.git $@/test/bats
+	git clone https://github.com/bats-core/bats-support.git $@/test/test_helper/bats-support
+	git clone https://github.com/bats-core/bats-assert.git $@/test/test_helper/bats-assert
 
 run:
 	go run main.go
