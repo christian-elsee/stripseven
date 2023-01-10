@@ -17,14 +17,16 @@ var runCmd = &cobra.Command{
 	Short: "Run the stripseven reverse proxy",
 	Long: `Run the stripseven reverse proxy`,
 	Run: func(cmd *cobra.Command, args []string) {
-  	log.SetFormatter(&log.JSONFormatter{})
-    log.WithFields(
+    logf := log.WithFields(
       log.Fields{
-      	"trace": pkg.Trace("cmd", "Run"),
+      	"trace": pkg.Trace("runCmd.Run", "cmd/run"),
       	"port": pkg.Must(cmd.Flags().GetInt("port")),
       	"interface": pkg.Must(cmd.Flags().GetString("interface")),
       },
-    ).Info("Enter")
+    )
+    logf.Debug("Enter")
+    defer logf.Debug("Exit")
+
 	},
 }
 

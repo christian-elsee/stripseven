@@ -12,6 +12,6 @@ const PROJECT string = "github.com/christianlc-highlights/stripseven"
 
 func Trace(function, pkg string) string {
   return fmt.Sprintf(
-    "%s/%s.%s", PROJECT, pkg, function,
+    "%s/%s#%s", PROJECT, pkg, function,
   )
 }
