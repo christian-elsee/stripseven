@@ -5,11 +5,10 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
-	"log"
 	"github.com/spf13/cobra"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/christianlc-highlights/stripseven/pkg"
 )
 
 // runCmd represents the run command
@@ -18,13 +17,13 @@ var runCmd = &cobra.Command{
 	Short: "Run the stripseven reverse proxy",
 	Long: `Run the stripseven reverse proxy`,
 	Run: func(cmd *cobra.Command, args []string) {
-   log.SetFormatter(&log.JSONFormatter{})
+  	log.SetFormatter(&log.JSONFormatter{})
     log.WithFields(
-        log.Fields{
-            "foo": "foo",
-            "bar": "bar",
-        },
-    ).Info("Something happened")
+      log.Fields{
+      	"trace": pkg.Trace("cmd", "Run"),
+      	"port": pkg.Must(cmd.Flags().GetInt("port")),
+      },
+    ).Info("Enter")
 	},
 }
 
@@ -41,5 +40,7 @@ func init() {
 	// is called directly, e.g.:
 	// runCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	runCmd.Flags().IntP("port", "p", 8080, "specify local bind port")
+	runCmd.Flags().IntP("port", "p", 8080, "specify port")
+	runCmd.Flags().StringP("interface", "i", "localhost", "specify interface")
+
 }

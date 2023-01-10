@@ -7,3 +7,5 @@
 !main.go
 !cmd
 !cmd/**
+!pkg
+!pkg/**
