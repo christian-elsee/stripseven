@@ -21,7 +21,7 @@ run:
 	go run main.go
 
 build: dist
-	go build -o dist/stripseven main.go
+	go build -o dist/build main.go
 
 check: dist build
 	rsync -av bats/ dist/test

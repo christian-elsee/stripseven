@@ -1,8 +1,8 @@
 
 @test "can run the build" {
-  dist/stripseven
+  dist/build
 }
 
 @test "can run the build's run command" {
-  dist/stripseven run
+  dist/build run
 }

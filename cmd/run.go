@@ -22,6 +22,7 @@ var runCmd = &cobra.Command{
       log.Fields{
       	"trace": pkg.Trace("cmd", "Run"),
       	"port": pkg.Must(cmd.Flags().GetInt("port")),
+      	"interface": pkg.Must(cmd.Flags().GetString("interface")),
       },
     ).Info("Enter")
 	},
