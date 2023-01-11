@@ -11,4 +11,6 @@
 !pkg/**
 !bats
 !bats/**
+!.github
+!.github/**
 
