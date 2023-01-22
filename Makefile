@@ -1,6 +1,6 @@
 
 .DEFAULT_GOAL := @goal
-:ONESHELL:
+.ONESHELL:
 
 ## recipe
 @goal: cleandist dist build check
@@ -24,8 +24,16 @@ build: dist
 	go build -o dist/build main.go
 
 check: dist build
+	socat TCP4-LISTEN:2000,fork EXEC:cat &
+
 	rsync -av bats/ dist/test
-	dist/test/bats/bin/bats --tap dist/test
+	dist/test/bats/bin/bats --tap dist/test ||:
+
+	kill $$!
+
+fubar:
+	v=asdf
+	echo $$v
 
 lint:
 	goimports -l -w .

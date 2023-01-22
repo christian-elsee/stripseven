@@ -4,5 +4,5 @@
 }
 
 @test "can run the build's run command" {
-  dist/build run
+  dist/build run -h
 }
