@@ -24,11 +24,13 @@ build: dist
 	go build -o dist/build main.go
 
 check: dist build
-	socat TCP4-LISTEN:2000,fork EXEC:cat &
+	# start an echo server
+	socat -v -T0.05 tcp-l:2000,reuseaddr,fork system:"echo; cat"
 
 	rsync -av bats/ dist/test
 	dist/test/bats/bin/bats --tap dist/test ||:
 
+	# kill the echo server
 	kill $$!
 
 fubar:
