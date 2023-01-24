@@ -13,4 +13,5 @@
 !bats/**
 !.github
 !.github/**
+!README.md
 
