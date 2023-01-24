@@ -25,7 +25,7 @@ build: dist
 
 check: dist build
 	# start an echo server
-	socat -v -T0.05 tcp-l:2000,reuseaddr,fork system:"echo; cat"
+	socat -T1 tcp-l:2000,reuseaddr,fork system:"echo; cat" &>/dev/null &
 
 	rsync -av bats/ dist/test
 	dist/test/bats/bin/bats --tap dist/test ||:
