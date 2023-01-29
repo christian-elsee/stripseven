@@ -5,7 +5,6 @@ go 1.18
 require (
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.6.1
-	inet.af/tcpproxy v0.0.0-20221017015627-91f861402626
 )
 
 require (
