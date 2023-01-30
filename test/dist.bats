@@ -1,7 +1,7 @@
 # sanity check dist
 
-@test "can deploy manifest" {
-  kubectl apply -f dist/manifest.yaml --dry-run=server
+@test "can validate manifest yaml" {
+  <dist/manifest.yaml yq -re .
 }
 
 @test "can lint golang" {

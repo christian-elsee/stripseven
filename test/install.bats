@@ -1,10 +1,10 @@
 
 @test "can reach the echo server" {
-  nc -zv localhost 2000
+  kubectl exec -it nc -zv localhost 12321
 }
 
 @test "can verify the echo" {
-  echo hello | nc localhost 2000 | grep hello
+  echo hello | nc localhost sq | grep hello
 }
 
 @test "can proxy the echo server" {

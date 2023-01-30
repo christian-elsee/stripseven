@@ -10,7 +10,7 @@ export TS := $(shell date +%s)
 @fubar: one two
 
 dist: export sha := $(shell git rev-parse --short HEAD)
-dist: export portecho ?= 2000
+dist: export portecho ?= 1221
 dist:
 	mkdir $@
 	go mod init github.com/christianlc-highlights/stripseven ||:
@@ -41,12 +41,14 @@ check-build: build
 	dist/test/bats/bin/bats --tap dist/test/build.bats
 
 install: dist build
+	kubectl create namespace $(NAME) ||:
 	kubectl config set-context --current --namespace $(NAME)
-	kubectl apply -f dist/manifest.yaml --dry-run=server -oyaml \
-		| kubectl apply -f-
 
-	#kubectl rollout status deployment
-	#kubectl get all -lapp.kubernetes.io/part-of=$(NAME)
+	kubectl apply -f dist/manifest.yaml --dry-run=server
+	kubectl apply -f dist/manifest.yaml
+
+	kubectl rollout status deployment
+	kubectl get all -lapp.kubernetes.io/part-of=$(NAME)
 
 check-install: install
 	dist/test/bats/bin/bats --tap dist/test/install.bats
