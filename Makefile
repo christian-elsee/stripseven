@@ -6,7 +6,8 @@ export TS := $(shell date +%s)
 .ONESHELL:
 
 ## recipe
-@goal: cleandist dist build install check
+@goal: distclean dist check-dist build check-build install check
+@fubar: one two
 
 dist: export sha := $(shell git rev-parse --short HEAD)
 dist: export portecho ?= 2000
@@ -22,34 +23,44 @@ dist:
 	git clone https://github.com/bats-core/bats-support.git $@/test/test_helper/bats-support
 	git clone https://github.com/bats-core/bats-assert.git $@/test/test_helper/bats-assert
 
+	# add tests
+	cp -rf test $@
+
 	# interpolate manifest
 	cat manifest/* \
 		| envsubst \
 		| tee $@/manifest.yaml
 
-run:
-	go run main.go
+check-dist: distclean dist
+	dist/test/bats/bin/bats --tap dist/test/dist.bats
 
 build: dist
 	go build -o dist/build main.go
 
+check-build: build
+	dist/test/bats/bin/bats --tap dist/test/build.bats
+
 install: dist build
 	kubectl config set-context --current --namespace $(NAME)
-	kubectl apply -f dist/manifest.yaml
-	kubectl rollout status deployment
+	kubectl apply -f dist/manifest.yaml --dry-run=server -oyaml \
+		| kubectl apply -f-
+
+	#kubectl rollout status deployment
+	#kubectl get all -lapp.kubernetes.io/part-of=$(NAME)
+
+check-install: install
+	dist/test/bats/bin/bats --tap dist/test/install.bats
 
 check: dist build install
-	rsync -av bats/ dist/test
-	dist/test/bats/bin/bats --tap dist/test ||:
+	dist/test/bats/bin/bats --tap dist/test
 
-lint:
-	goimports -l -w .
-	golint ./...
-	go vet ./... ||:
-
-cleandist:
+distclean:
 	rm -rvf dist
 
 clean:
 	kubectl delete -f dist/manifest.yaml ||:
 
+lint:
+	goimports -l -w .
+	golint ./...
+	go vet ./... ||:

@@ -1,10 +1,10 @@
 
-@test "can run the build" {
-  dist/build
+@test "can reach the echo server" {
+  nc -zv localhost 2000
 }
 
-@test "can run the build's run command" {
-  dist/build run -h
+@test "can verify the echo" {
+  echo hello | nc localhost 2000 | grep hello
 }
 
 @test "can proxy the echo server" {

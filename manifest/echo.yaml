@@ -4,14 +4,15 @@ metadata:
   name: echo
   labels:
     app.kubernetes.io/name: echo
-    app.kubernetes.io/instance: echo-${sha}
+    app.kubernetes.io/instance: "echo-${sha}"
     app.kubernetes.io/version: "${sha}"
     app.kubernetes.io/component: server
-    app.kubernetes.io/part-of: stripsever
+    app.kubernetes.io/part-of: "${NAME}"
     app.kubernetes.io/managed-by: none
   annotations:
     app.kubernetes.io/timestamp: "${TS}"
 spec:
+  progressDeadlineSeconds: 60
   selector:
     matchLabels:
       app.kubernetes.io/name: echo
@@ -40,5 +41,3 @@ spec:
           tcpSocket:
             port: main
           periodSeconds: 10
-        progressDeadlineSeconds: 60
-
