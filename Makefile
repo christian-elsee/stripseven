@@ -6,15 +6,24 @@ export TS := $(shell date +%s)
 .ONESHELL:
 
 ## recipe
-@goal: distclean dist check-dist build check-build install check
-@fubar: one two
+@goal: distclean dist build check
 
 dist: export sha := $(shell git rev-parse --short HEAD)
 dist: export portecho ?= 1221
+dist: export test := *
 dist:
-	mkdir $@
+	mkdir -p $@ $@/manifest
 	go mod init github.com/christianlc-highlights/stripseven ||:
 	go mod tidy
+
+	# add tests to dist
+	cp -rf test $@
+	cp sh/entrypoint.sh $@/test
+
+	# interpolate manifest
+	cat manifest/* \
+		| envsubst \
+		| tee $@/manifest.yaml
 
 	# add bats struts
 	# https://bats-core.readthedocs.io/en/stable/tutorial.html#quick-installation
@@ -23,24 +32,16 @@ dist:
 	git clone https://github.com/bats-core/bats-support.git $@/test/test_helper/bats-support
 	git clone https://github.com/bats-core/bats-assert.git $@/test/test_helper/bats-assert
 
-	# add tests
-	cp -rf test $@
-
-	# interpolate manifest
-	cat manifest/* \
-		| envsubst \
-		| tee $@/manifest.yaml
-
-check-dist: distclean dist
+check-dist: dist
 	dist/test/bats/bin/bats --tap dist/test/dist.bats
 
 build: dist
 	go build -o dist/build main.go
 
-check-build: build
+check: build
 	dist/test/bats/bin/bats --tap dist/test/build.bats
 
-install: dist build
+install: build
 	kubectl create namespace $(NAME) ||:
 	kubectl config set-context --current --namespace $(NAME)
 
@@ -53,9 +54,6 @@ install: dist build
 check-install: install
 	dist/test/bats/bin/bats --tap dist/test/install.bats
 
-check: dist build install
-	dist/test/bats/bin/bats --tap dist/test
-
 distclean:
 	rm -rvf dist
 
@@ -63,6 +61,6 @@ clean:
 	kubectl delete -f dist/manifest.yaml ||:
 
 lint:
-	goimports -l -w .
+	goimports -l .
 	golint ./...
 	go vet ./... ||:

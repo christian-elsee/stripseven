@@ -1,0 +1,42 @@
+--
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test
+  labels:
+    app.kubernetes.io/name: test
+    app.kubernetes.io/instance: "test-${sha}"
+    app.kubernetes.io/version: "${sha}"
+    app.kubernetes.io/component: test
+    app.kubernetes.io/part-of: "${NAME}"
+    app.kubernetes.io/managed-by: none
+  annotations:
+    app.kubernetes.io/timestamp: "${TS}"
+spec:
+  progressDeadlineSeconds: 60
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: test
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: test
+    spec:
+      restartPolicy: OnFailure
+      volumes:
+        - name: test
+          configMap:
+            name: test
+      containers:
+        - name: test
+          image: docker.io/bats/bats:1.8.2
+          command:
+            - sh
+            - /opt/test/entrypoint.sh
+          args:
+            - "--tap"
+            - "/opt/test/${test}.bats"
+          volumeMounts:
+            - name: test
+              mountPath: /opt/test
