@@ -8,7 +8,5 @@
 }
 
 @test "can proxy the echo server" {
-  timeout 5 dist/build run -t localhost:2000 &>/dev/null &
-  sleep 2
-  curl -s http://localhost:8080 -d 'hello' | grep -q hello
+  curl -s http://stripseven -d 'hello' | grep -q hello
 }
