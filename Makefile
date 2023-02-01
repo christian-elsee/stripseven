@@ -47,11 +47,12 @@ install: build
 	<./docker.io.token.gpg gpg -d \
 		| xargs -- \
 			docker login -u christianelsee -p
-	docker push docker.io/christianelsee/stripseven
+	docker push docker.io/christianelsee/stripseven:$(sha)
 
 	kubectl create namespace $(NAME) ||:
 	kubectl config set-context --current --namespace $(NAME)
-	kubectp create configmap test \
+	kubectl delete configmap test ||:
+	kubectl create configmap test \
 		--from-file=dist/test
 	kubectl apply -f dist/manifest.yaml --dry-run=server
 	kubectl apply -f dist/manifest.yaml

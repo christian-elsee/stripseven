@@ -63,4 +63,3 @@ spec:
   ports:
     - port: ${portecho}
       targetPort: main
-
