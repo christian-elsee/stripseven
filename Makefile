@@ -1,6 +1,7 @@
 
 export NAME := $(shell pwd | xargs basename)
 export TS := $(shell date +%s)
+export sha := $(shell git rev-parse --short HEAD)
 
 .DEFAULT_GOAL := @goal
 .ONESHELL:
@@ -8,7 +9,6 @@ export TS := $(shell date +%s)
 ## recipe
 @goal: distclean dist build check
 
-dist: export sha := $(shell git rev-parse --short HEAD)
 dist: export portecho ?= 1221
 dist: export test := *
 dist:
@@ -36,6 +36,7 @@ build: dist
 	docker build \
 		-t local/stripseven \
 		-t docker.io/christianelsee/stripseven \
+		-t docker.io/christianelsee/stripseven:$(sha) \
 		.
 
 check: build
@@ -43,6 +44,11 @@ check: build
 	dist/test/bats/bin/bats --tap dist/test/build.bats
 
 install: build
+	<./docker.io.token.gpg gpg -d \
+		| xargs -- \
+			docker login -u christianelsee -p
+	docker push docker.io/christianelsee/stripseven
+
 	kubectl create namespace $(NAME) ||:
 	kubectl config set-context --current --namespace $(NAME)
 	kubectp create configmap test \
@@ -54,7 +60,6 @@ install: build
 	kubectl get all -lapp.kubernetes.io/part-of=$(NAME)
 
 check-install: install
-
 	dist/test/bats/bin/bats --tap dist/test/install.bats
 
 distclean:
