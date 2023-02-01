@@ -32,19 +32,21 @@ dist:
 	git clone https://github.com/bats-core/bats-support.git $@/test/test_helper/bats-support
 	git clone https://github.com/bats-core/bats-assert.git $@/test/test_helper/bats-assert
 
-check-dist: dist
-	dist/test/bats/bin/bats --tap dist/test/dist.bats
-
 build: dist
-	go build -o dist/build main.go
+	docker build \
+		-t local/stripseven \
+		-t docker.io/christianelsee/stripseven \
+		.
 
 check: build
+	cp -f test/build.bats dist/test/
 	dist/test/bats/bin/bats --tap dist/test/build.bats
 
 install: build
 	kubectl create namespace $(NAME) ||:
 	kubectl config set-context --current --namespace $(NAME)
-
+	kubectp create configmap test \
+		--from-file=dist/test
 	kubectl apply -f dist/manifest.yaml --dry-run=server
 	kubectl apply -f dist/manifest.yaml
 
@@ -52,6 +54,7 @@ install: build
 	kubectl get all -lapp.kubernetes.io/part-of=$(NAME)
 
 check-install: install
+
 	dist/test/bats/bin/bats --tap dist/test/install.bats
 
 distclean:
