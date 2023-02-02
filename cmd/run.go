@@ -59,11 +59,10 @@ var runCmd = &cobra.Command{
     }
 
     logf.Info("Start proxy")
-		err = pkg.Proxy(ctx, lst, tgt)
-		if err != nil {
+		if err = pkg.Proxy(ctx, lst, tgt); err != nil {
 			logf.
 		  	WithFields(log.Fields{ "err": err }).
-		  	Error("Proxy has stopped")
+		  	Info("Proxy has stopped")
 		}
 	},
 }

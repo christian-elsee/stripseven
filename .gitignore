@@ -9,9 +9,12 @@
 !cmd/**
 !pkg
 !pkg/**
-!bats
-!bats/**
+!test
+!test/*.bats
 !.github
 !.github/**
 !README.md
-
+!manifest
+!manifest/*
+!docker.io.token.gpg
+!Dockerfile
