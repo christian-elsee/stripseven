@@ -56,6 +56,8 @@ metadata:
     app.kubernetes.io/component: proxy
     app.kubernetes.io/part-of: "${NAME}"
     app.kubernetes.io/managed-by: none
+  annotations:
+    app.kubernetes.io/timestamp: "${TS}"
 spec:
   type: ClusterIP
   sessionAffinity: None
@@ -64,3 +66,31 @@ spec:
   ports:
     - port: 80
       targetPort: main
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stripseven
+  labels:
+    app.kubernetes.io/name: stripseven
+    app.kubernetes.io/instance: "stripseven-${sha}"
+    app.kubernetes.io/version: "${sha}"
+    app.kubernetes.io/component: proxy
+    app.kubernetes.io/part-of: "${NAME}"
+    app.kubernetes.io/managed-by: none
+  annotations:
+    app.kubernetes.io/timestamp: "${TS}"
+spec:
+  rules:
+  - host: stripseven
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: stripseven
+            port:
+              number: 80
+  ingressClassName: nginx

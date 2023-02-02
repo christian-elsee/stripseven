@@ -67,12 +67,16 @@ install: namespace build
 	kubectl get all -lapp.kubernetes.io/part-of=$(NAME)
 
 check-install: install
+	export ingress=$$(
+		kubectl get ingress stripseven -ojson \
+			| jq -re .status.loadBalancer.ingress[0].ip
+	)
 	dist/test/bats/bin/bats --tap dist/test/install.bats
 
 distclean:
 	rm -rvf dist
 
-clean:
+clean: namespace
 	kubectl delete -f dist/manifest.yaml ||:
 
 lint:
