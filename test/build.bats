@@ -1,10 +1,10 @@
 
 @test "can run the build" {
-  docker run -it --rm local/stripseven
+  docker run --rm local/stripseven
 }
 
-@test "can run the build's run command" {
-  docker run -it --rm local/stripseven run -h
+@test "can run the build with arguments" {
+  docker run --rm local/stripseven run -h
 }
 
 @test "can run the build as a proxy" {
@@ -19,13 +19,12 @@
     --  local/stripseven run \
           -l 0.0.0.0:1221 \
           -t localhost:1234
-  docker run -it --rm --network "$name" \
+  docker run --rm --network "$name" \
     -- alpine nc -zv "$name" 1221
-
-  docker rm -f "$name"
 }
 
 teardown_file() {
-  docker rm -f test-local-stripseven ||:
-  docker network rm test-local-stripseven ||:
+  name=test-local-stripseven
+  docker rm -f "$name" ||:
+  docker network rm "$name" ||:
 }
