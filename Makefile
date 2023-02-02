@@ -43,14 +43,20 @@ check: build
 	cp -f test/build.bats dist/test/
 	dist/test/bats/bin/bats --tap dist/test/build.bats
 
-install: build
+namespace:
+	kubectl create namespace $(NAME) --dry-run=client -oyaml \
+		| kubectl apply -f-
+	kubectl config set-context \
+		--current \
+		--namespace $(NAME)
+
+install: namespace build
 	<./docker.io.token.gpg gpg -d \
 		| xargs -- \
 			docker login -u christianelsee -p
 	docker push docker.io/christianelsee/stripseven:$(sha)
 
-	kubectl create namespace $(NAME) ||:
-	kubectl config set-context --current --namespace $(NAME)
+
 	kubectl delete configmap test ||:
 	kubectl create configmap test \
 		--from-file=dist/test
