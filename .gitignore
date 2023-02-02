@@ -17,3 +17,4 @@
 !manifest
 !manifest/*
 !docker.io.token.gpg
+!Dockerfile
